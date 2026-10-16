@@ -1,0 +1,14 @@
+<article class="stat-card panel">
+  <div class="stat-card__top">
+    <span>{{ label() }}</span>
+    <div class="stat-card__icon">
+      <svg [lucideIcon]="icon()"></svg>
+    </div>
+  </div>
+
+  <strong class="stat-card__value">{{ value() }}</strong>
+
+  @if (hint()) {
+    <p class="stat-card__hint">{{ hint() }}</p>
+  }
+</article>

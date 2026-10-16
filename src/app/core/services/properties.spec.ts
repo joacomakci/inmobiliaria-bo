@@ -1,0 +1,15 @@
+import { TestBed } from '@angular/core/testing';
+import { Properties } from './properties';
+
+describe('Properties', () => {
+  let service: Properties;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({});
+    service = TestBed.inject(Properties);
+  });
+
+  it('should be created', () => {
+    expect(service).toBeTruthy();
+  });
+});

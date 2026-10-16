@@ -1,0 +1,124 @@
+<header class="page-heading">
+  <p class="eyebrow">{{ today }}</p>
+  <h1>Hola, {{ name() }}</h1>
+  <p class="subtitle">Este es el estado de la inmobiliaria hoy.</p>
+</header>
+
+@if (loading()) {
+  <p class="state">Cargando resumen...</p>
+}
+
+@if (error()) {
+  <p class="state state--error">
+    No pudimos cargar el resumen. Revisá que el backend esté corriendo.
+  </p>
+}
+
+@if (!loading() && !error()) {
+  <section class="stats">
+    <app-stat-card
+      label="Propiedades"
+      [value]="summary()?.totalProperties ?? 0"
+      hint="Cargadas en el sistema"
+      [icon]="icons.properties"
+    />
+    <app-stat-card
+      label="Consultas nuevas"
+      [value]="byStatus()['nuevo'] ?? 0"
+      hint="Sin contactar todavía"
+      [icon]="icons.leads"
+    />
+    <app-stat-card
+      label="Visitas agendadas"
+      [value]="byStatus()['visita_agendada'] ?? 0"
+      [icon]="icons.visits"
+    />
+    <app-stat-card
+      label="Tasa de conversión"
+      [value]="(summary()?.conversionRate ?? 0) + '%'"
+      hint="Ganadas sobre el total"
+      [icon]="icons.conversion"
+    />
+  </section>
+
+  <div class="grid">
+    <section class="panel">
+      <div class="panel__head">
+        <h2>Embudo comercial</h2>
+        <p>Hasta dónde llegó cada consulta</p>
+      </div>
+
+      <div class="funnel">
+        @for (row of funnel(); track row.label) {
+          <div>
+            <div class="funnel__label">
+              <span>{{ row.label }}</span>
+              <strong>{{ row.value }}</strong>
+            </div>
+            <div class="funnel__track">
+              <i [style.width.%]="row.width"></i>
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel__head">
+        <h2>Últimas consultas</h2>
+        <p>Las más recientes que entraron</p>
+      </div>
+
+      @if (leads().length === 0) {
+        <p class="empty">Todavía no hay consultas.</p>
+      }
+
+      @for (lead of leads(); track lead.id) {
+        <div class="row">
+          <div class="avatar">{{ initials(lead) }}</div>
+          <div class="row__info">
+            <strong>{{ lead.firstName }} {{ lead.lastName }}</strong>
+            <span>{{ lead.property?.title ?? 'Consulta general' }}</span>
+            <small>{{ leadSourceLabels[lead.source] }} · {{ timeAgo(lead.createdAt) }}</small>
+          </div>
+          <span class="badge badge--{{ lead.status }}">{{ leadStatusLabels[lead.status] }}</span>
+        </div>
+      }
+    </section>
+  </div>
+
+  <section class="panel">
+    <div class="panel__head">
+      <h2>Propiedades recientes</h2>
+      <p>Las últimas cargadas al catálogo</p>
+    </div>
+
+    @if (properties().length === 0) {
+      <p class="empty">Todavía no hay propiedades cargadas.</p>
+    }
+
+    @for (property of properties(); track property.id) {
+      <div class="row">
+        <div class="thumb">
+          @if (property.images.length > 0) {
+            <img [src]="property.images[0].url" [alt]="property.title" />
+          } @else {
+            {{ property.title.slice(0, 2).toUpperCase() }}
+          }
+        </div>
+        <div class="row__info">
+          <strong>{{ property.title }}</strong>
+          <span>
+            {{ property.neighborhood ?? property.city }} ·
+            {{ propertyTypeLabels[property.type] }} ·
+            {{ operationLabels[property.operation] }}
+          </span>
+        </div>
+        <span class="price">{{ property.currency }} {{ property.price | number }}</span>
+        <span class="badge badge--{{ property.status }}">
+          {{ propertyStatusLabels[property.status] }}
+        </span>
+      </div>
+    }
+  </section>
+}

@@ -1,1 +1,122 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+  --color-primary: #c0392b;
+  --color-primary-dark: #a93226;
+  --color-primary-light: #fdedec;
+  --color-text: #201d2b;
+  --color-text-muted: #6f6a78;
+  --color-border: #eceaf0;
+  --color-surface: #ffffff;
+  --color-canvas: #faf9fc;
+  --color-success: #168568;
+  --color-success-soft: #e6f7f0;
+  --color-warning: #aa7222;
+  --color-warning-soft: #fff3df;
+  --color-info: #3971b4;
+  --color-info-soft: #e8f2ff;
+  --radius-pill: 999px;
+  --radius-card: 12px;
+  --font-family: 'Poppins', 'Segoe UI', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-family);
+  color: var(--color-text);
+  background: var(--color-canvas);
+}
+
+a {
+  color: inherit;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+.btn {
+  display: inline-block;
+  padding: 10px 24px;
+  border: none;
+  border-radius: var(--radius-pill);
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+
+  &--primary {
+    background: var(--color-primary);
+    color: white;
+
+    &:hover {
+      background: var(--color-primary-dark);
+    }
+  }
+
+  &--outline {
+    background: transparent;
+    color: var(--color-primary);
+    border: 1px solid var(--color-primary);
+
+    &:hover {
+      background: var(--color-primary-light);
+    }
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+.panel {
+  padding: 20px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--color-canvas);
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
+
+  &--nuevo,
+  &--disponible,
+  &--ganado,
+  &--vendida,
+  &--alquilada {
+    background: var(--color-success-soft);
+    color: var(--color-success);
+  }
+
+  &--contactado,
+  &--reservada {
+    background: var(--color-primary-light);
+    color: var(--color-primary);
+  }
+
+  &--visita_agendada {
+    background: var(--color-info-soft);
+    color: var(--color-info);
+  }
+
+  &--en_negociacion {
+    background: var(--color-warning-soft);
+    color: var(--color-warning);
+  }
+}

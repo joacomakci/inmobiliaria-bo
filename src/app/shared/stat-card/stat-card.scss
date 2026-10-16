@@ -1,0 +1,38 @@
+.stat-card {
+  &__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+  }
+
+  &__icon {
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border-radius: 9px;
+    background: var(--color-primary-light);
+    color: var(--color-primary);
+
+    svg {
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  &__value {
+    display: block;
+    margin: 14px 0 6px;
+    font-size: 1.9rem;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+  }
+
+  &__hint {
+    margin: 0;
+    font-size: 0.78rem;
+    color: var(--color-text-muted);
+  }
+}

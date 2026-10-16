@@ -1,0 +1,52 @@
+<div class="shell">
+  <aside class="sidebar" [class.sidebar--open]="menuOpen()">
+    <div class="sidebar__brand">
+      <span class="sidebar__logo">{{ brand }}</span>
+      <button type="button" class="sidebar__close icon-btn" (click)="closeMenu()" aria-label="Cerrar menú">
+        <svg [lucideIcon]="icons.close"></svg>
+      </button>
+    </div>
+
+    <nav class="sidebar__nav" aria-label="Navegación principal">
+      <p class="sidebar__label">GESTIÓN</p>
+      @for (item of navItems(); track item.path) {
+        <a
+          [routerLink]="item.path"
+          routerLinkActive="is-active"
+          class="nav-item"
+          (click)="closeMenu()"
+        >
+          <svg [lucideIcon]="item.icon"></svg>
+          <span>{{ item.label }}</span>
+        </a>
+      }
+    </nav>
+
+    <div class="sidebar__user">
+      <div class="avatar">{{ initials() }}</div>
+      <div class="sidebar__user-info">
+        <strong>{{ user()?.email }}</strong>
+        <span>{{ user()?.role }}</span>
+      </div>
+      <button type="button" class="icon-btn" (click)="logout()" aria-label="Cerrar sesión" title="Cerrar sesión">
+        <svg [lucideIcon]="icons.logout"></svg>
+      </button>
+    </div>
+  </aside>
+
+  @if (menuOpen()) {
+    <button type="button" class="overlay" (click)="closeMenu()" aria-label="Cerrar menú"></button>
+  }
+
+  <div class="main">
+    <header class="topbar">
+      <button type="button" class="icon-btn" (click)="toggleMenu()" aria-label="Abrir menú">
+        <svg [lucideIcon]="icons.menu"></svg>
+      </button>
+    </header>
+
+    <main class="content">
+      <router-outlet />
+    </main>
+  </div>
+</div>
