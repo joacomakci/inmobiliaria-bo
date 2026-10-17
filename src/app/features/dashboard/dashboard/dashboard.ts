@@ -11,7 +11,7 @@ import { AuthService } from '../../../core/auth/auth.service';
 import { DashboardService } from '../../../core/services/dashboard';
 import { LeadsService } from '../../../core/services/leads';
 import { PropertiesService } from '../../../core/services/properties';
-import { DashboardSummary } from '../../../core/models/dashboard.model';
+import { DashboardSummary, LeadsByDay } from '../../../core/models/dashboard.model';
 import { Lead, LeadStatus } from '../../../core/models/lead.model';
 import { Property } from '../../../core/models/property.model';
 import {
@@ -23,10 +23,11 @@ import {
 } from '../../../core/models/labels';
 import { timeAgo } from '../../../core/utils/time-ago';
 import { StatCard } from '../../../shared/stat-card/stat-card';
+import { LeadsChart } from '../leads-chart/leads-chart';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [DecimalPipe, StatCard],
+  imports: [DecimalPipe, StatCard, LeadsChart],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
@@ -41,8 +42,12 @@ export class Dashboard implements OnInit {
 
   readonly summary = signal<DashboardSummary | null>(null);
   readonly byStatus = signal<Record<string, number>>({});
+  readonly leadsByDay = signal<LeadsByDay[]>([]);
   readonly leads = signal<Lead[]>([]);
   readonly properties = signal<Property[]>([]);
+
+  readonly days = signal(30);
+  readonly periods = [7, 30, 90];
 
   readonly icons = {
     properties: LucideBuilding2,
@@ -98,14 +103,16 @@ export class Dashboard implements OnInit {
     forkJoin({
       summary: this.dashboardService.summary(),
       byStatus: this.dashboardService.leadsByStatus(),
+      leadsByDay: this.dashboardService.leadsByDay(this.days()),
       leads: this.leadsService.findAll(),
       properties: this.propertiesService.findAll(),
     }).subscribe({
-      next: ({ summary, byStatus, leads, properties }) => {
+      next: ({ summary, byStatus, leadsByDay, leads, properties }) => {
         this.summary.set(summary);
         this.byStatus.set(
           Object.fromEntries(byStatus.map((row) => [row.status, Number(row.count)])),
         );
+        this.leadsByDay.set(leadsByDay);
         this.leads.set(leads.slice(0, 5));
         this.properties.set(properties.slice(0, 4));
         this.loading.set(false);
@@ -115,6 +122,14 @@ export class Dashboard implements OnInit {
         this.error.set(true);
         this.loading.set(false);
       },
+    });
+  }
+
+  setDays(days: number): void {
+    this.days.set(days);
+    this.dashboardService.leadsByDay(days).subscribe({
+      next: (data) => this.leadsByDay.set(data),
+      error: (err: unknown) => console.error(err),
     });
   }
 

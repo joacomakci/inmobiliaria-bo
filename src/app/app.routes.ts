@@ -19,6 +19,17 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/dashboard/dashboard/dashboard').then((m) => m.Dashboard),
       },
+            {
+        path: 'leads',
+        canActivate: [roleGuard('admin', 'agente')],
+        loadComponent: () => import('./features/leads/leads/leads').then((m) => m.Leads),
+      },
+      {
+        path: 'leads/:id',
+        canActivate: [roleGuard('admin', 'agente')],
+        loadComponent: () =>
+          import('./features/leads/lead-detail/lead-detail').then((m) => m.LeadDetail),
+      },
     ],
   },
   { path: '**', redirectTo: '' },

@@ -1,0 +1,37 @@
+<div class="chart">
+  <div class="chart__y">
+    @for (tick of yTicks(); track tick) {
+      <span>{{ tick }}</span>
+    }
+  </div>
+
+  <div class="chart__plot">
+    <div class="chart__grid">
+      <i></i><i></i><i></i><i></i><i></i>
+    </div>
+
+    @if (data().length > 0) {
+      <svg viewBox="0 0 600 190" preserveAspectRatio="none" role="img"
+           aria-label="Consultas recibidas por día">
+        <defs>
+          <linearGradient id="leadsFill" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" class="chart__stop chart__stop--top" />
+            <stop offset="100%" class="chart__stop chart__stop--bottom" />
+          </linearGradient>
+        </defs>
+        <path [attr.d]="areaPath()" fill="url(#leadsFill)" />
+        <path [attr.d]="linePath()" class="chart__line" />
+      </svg>
+    }
+  </div>
+
+  <div class="chart__x">
+    @for (label of xLabels(); track $index) {
+      <span>{{ label }}</span>
+    }
+  </div>
+</div>
+
+<p class="chart__total">
+  <strong>{{ total() }}</strong> consultas en el período
+</p>

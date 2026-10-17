@@ -1,0 +1,136 @@
+<a routerLink="/leads" class="back">← Volver a consultas</a>
+
+@if (loading()) {
+  <p class="state">Cargando consulta...</p>
+}
+
+@if (error()) {
+  <p class="state state--error">No pudimos cargar esta consulta.</p>
+}
+
+@if (lead(); as item) {
+  <header class="page-heading head">
+    <div>
+      <p class="eyebrow">
+        {{ sourceLabels[item.source] }} · {{ item.createdAt | date: 'dd/MM/yyyy HH:mm' }}
+      </p>
+      <h1>{{ item.firstName }} {{ item.lastName }}</h1>
+    </div>
+    <span class="badge badge--{{ item.status }}">{{ statusLabels[item.status] }}</span>
+  </header>
+
+  @if (actionError()) {
+    <p class="state state--error">{{ actionError() }}</p>
+  }
+
+  <div class="layout">
+    <div class="layout__main">
+      <section class="panel">
+        <h2>Contacto</h2>
+        <dl class="info">
+          <div>
+            <dt>Email</dt>
+            <dd>
+              @if (item.email) {
+                <a [href]="'mailto:' + item.email">{{ item.email }}</a>
+              } @else {
+                —
+              }
+            </dd>
+          </div>
+          <div>
+            <dt>Teléfono</dt>
+            <dd>
+              @if (item.phone) {
+                {{ item.phone }} ·
+                <a [href]="whatsappLink(item.phone)" target="_blank" rel="noopener">
+                  Abrir WhatsApp
+                </a>
+              } @else {
+                —
+              }
+            </dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="panel">
+        <h2>Mensaje</h2>
+        <p class="message">{{ item.message }}</p>
+
+        @if (item.property; as property) {
+          <div class="property">
+            <span>Consultó por</span>
+            <strong>{{ property.title }}</strong>
+            <small>
+              {{ property.address }}, {{ property.city }} ·
+              {{ property.currency }} {{ property.price | number }}
+            </small>
+          </div>
+        }
+      </section>
+
+      <section class="panel">
+        <h2>Seguimiento</h2>
+
+        @for (note of item.notes ?? []; track note.id) {
+          <div class="note">
+            <div class="note__head">
+              <strong>{{ note.authorUser?.email ?? 'Sistema' }}</strong>
+              <span>{{ note.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+            </div>
+            <p>{{ note.text }}</p>
+          </div>
+        } @empty {
+          <p class="empty">Todavía no hay notas.</p>
+        }
+
+        <div class="note-form">
+          <textarea
+            class="field"
+            rows="3"
+            placeholder="Escribí una nota de seguimiento..."
+            [formControl]="noteControl"
+          ></textarea>
+          <button
+            type="button"
+            class="btn btn--primary"
+            [disabled]="saving() || noteControl.invalid"
+            (click)="addNote()"
+          >
+            Agregar nota
+          </button>
+        </div>
+      </section>
+    </div>
+
+    <aside class="layout__side">
+      <section class="panel">
+        <h2>Gestión</h2>
+
+        <label class="label" for="status">Estado</label>
+        <select id="status" class="field" [disabled]="saving()" (change)="changeStatus($event)">
+          @for (s of statuses; track s) {
+            <option [value]="s" [selected]="item.status === s">{{ statusLabels[s] }}</option>
+          }
+        </select>
+
+        <label class="label" for="agent">Agente asignado</label>
+        @if (isAdmin()) {
+          <select id="agent" class="field" [disabled]="saving()" (change)="assignAgent($event)">
+            <option value="" disabled [selected]="!item.agent">Sin asignar</option>
+            @for (agent of agents(); track agent.id) {
+              <option [value]="agent.id" [selected]="item.agent?.id === agent.id">
+                {{ agent.firstName }} {{ agent.lastName }}
+              </option>
+            }
+          </select>
+        } @else {
+          <p class="readonly">
+            {{ item.agent ? item.agent.firstName + ' ' + item.agent.lastName : 'Sin asignar' }}
+          </p>
+        }
+      </section>
+    </aside>
+  </div>
+}

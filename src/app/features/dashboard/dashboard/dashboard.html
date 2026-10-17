@@ -43,6 +43,30 @@
 
   <div class="grid">
     <section class="panel">
+      <div class="panel__head panel__head--split">
+        <div>
+          <h2>Rendimiento de consultas</h2>
+          <p>Consultas recibidas por día</p>
+        </div>
+
+        <div class="period">
+          @for (period of periods; track period) {
+            <button
+              type="button"
+              class="period__btn"
+              [class.is-active]="days() === period"
+              (click)="setDays(period)"
+            >
+              {{ period }} días
+            </button>
+          }
+        </div>
+      </div>
+
+      <app-leads-chart [data]="leadsByDay()" />
+    </section>
+
+    <section class="panel">
       <div class="panel__head">
         <h2>Embudo comercial</h2>
         <p>Hasta dónde llegó cada consulta</p>
@@ -61,6 +85,43 @@
           </div>
         }
       </div>
+    </section>
+  </div>
+
+  <div class="grid">
+    <section class="panel">
+      <div class="panel__head">
+        <h2>Propiedades recientes</h2>
+        <p>Las últimas cargadas al catálogo</p>
+      </div>
+
+      @if (properties().length === 0) {
+        <p class="empty">Todavía no hay propiedades cargadas.</p>
+      }
+
+      @for (property of properties(); track property.id) {
+        <div class="row">
+          <div class="thumb">
+            @if (property.images.length > 0) {
+              <img [src]="property.images[0].url" [alt]="property.title" />
+            } @else {
+              {{ property.title.slice(0, 2).toUpperCase() }}
+            }
+          </div>
+          <div class="row__info">
+            <strong>{{ property.title }}</strong>
+            <span>
+              {{ property.neighborhood ?? property.city }} ·
+              {{ propertyTypeLabels[property.type] }} ·
+              {{ operationLabels[property.operation] }}
+            </span>
+          </div>
+          <span class="price">{{ property.currency }} {{ property.price | number }}</span>
+          <span class="badge badge--{{ property.status }}">
+            {{ propertyStatusLabels[property.status] }}
+          </span>
+        </div>
+      }
     </section>
 
     <section class="panel">
@@ -86,39 +147,4 @@
       }
     </section>
   </div>
-
-  <section class="panel">
-    <div class="panel__head">
-      <h2>Propiedades recientes</h2>
-      <p>Las últimas cargadas al catálogo</p>
-    </div>
-
-    @if (properties().length === 0) {
-      <p class="empty">Todavía no hay propiedades cargadas.</p>
-    }
-
-    @for (property of properties(); track property.id) {
-      <div class="row">
-        <div class="thumb">
-          @if (property.images.length > 0) {
-            <img [src]="property.images[0].url" [alt]="property.title" />
-          } @else {
-            {{ property.title.slice(0, 2).toUpperCase() }}
-          }
-        </div>
-        <div class="row__info">
-          <strong>{{ property.title }}</strong>
-          <span>
-            {{ property.neighborhood ?? property.city }} ·
-            {{ propertyTypeLabels[property.type] }} ·
-            {{ operationLabels[property.operation] }}
-          </span>
-        </div>
-        <span class="price">{{ property.currency }} {{ property.price | number }}</span>
-        <span class="badge badge--{{ property.status }}">
-          {{ propertyStatusLabels[property.status] }}
-        </span>
-      </div>
-    }
-  </section>
 }

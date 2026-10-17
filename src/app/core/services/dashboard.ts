@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { environment } from '../../../environments/environment';
-import { DashboardSummary, StatusCount } from '../models/dashboard.model';
+import { DashboardSummary, LeadsByDay, StatusCount } from '../models/dashboard.model';
 
 @Injectable({ providedIn: 'root' })
 export class DashboardService {
@@ -14,5 +14,11 @@ export class DashboardService {
 
   leadsByStatus() {
     return this.http.get<StatusCount[]>(`${this.baseUrl}/leads-by-status`);
+  }
+
+    leadsByDay(days = 30) {
+    return this.http.get<LeadsByDay[]>(`${this.baseUrl}/leads-by-day`, {
+      params: { days },
+    });
   }
 }

@@ -1,0 +1,90 @@
+<header class="page-heading">
+  <h1>Consultas</h1>
+  <p class="subtitle">Seguimiento de las consultas que llegan desde la web.</p>
+</header>
+
+<div class="filters">
+  <div class="chips">
+    <button
+      type="button"
+      class="chip"
+      [class.is-active]="status() === ''"
+      (click)="setStatus('')"
+    >
+      Todas
+    </button>
+    @for (s of statuses; track s) {
+      <button
+        type="button"
+        class="chip"
+        [class.is-active]="status() === s"
+        (click)="setStatus(s)"
+      >
+        {{ statusLabels[s] }}
+      </button>
+    }
+  </div>
+
+  <select
+    class="field filters__agent"
+    aria-label="Filtrar por agente"
+    (change)="onAgentChange($event)"
+  >
+    <option value="">Todos los agentes</option>
+    @for (agent of agents(); track agent.id) {
+      <option [value]="agent.id">{{ agent.firstName }} {{ agent.lastName }}</option>
+    }
+  </select>
+</div>
+
+@if (loading()) {
+  <p class="state">Cargando consultas...</p>
+}
+
+@if (error()) {
+  <p class="state state--error">
+    No pudimos cargar las consultas. Revisá que el backend esté corriendo.
+  </p>
+}
+
+@if (!loading() && !error()) {
+  @if (leads().length === 0) {
+    <p class="state">No hay consultas con estos filtros.</p>
+  } @else {
+    <div class="panel table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Contacto</th>
+            <th>Propiedad</th>
+            <th>Origen</th>
+            <th>Agente</th>
+            <th>Estado</th>
+            <th>Recibida</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (lead of leads(); track lead.id) {
+            <tr>
+              <td>
+                <a class="table__link" [routerLink]="['/leads', lead.id]">
+                  <strong>{{ lead.firstName }} {{ lead.lastName }}</strong>
+                  <span>{{ lead.email ?? lead.phone ?? 'Sin datos de contacto' }}</span>
+                </a>
+              </td>
+              <td>{{ lead.property?.title ?? 'Consulta general' }}</td>
+              <td>{{ sourceLabels[lead.source] }}</td>
+              <td>
+                {{ lead.agent ? lead.agent.firstName + ' ' + lead.agent.lastName : 'Sin asignar' }}
+              </td>
+              <td>
+                <span class="badge badge--{{ lead.status }}">{{ statusLabels[lead.status] }}</span>
+              </td>
+              <td class="muted">{{ timeAgo(lead.createdAt) }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+}

@@ -11,3 +11,8 @@ export interface StatusCount {
   status: string;
   count: string;
 }
+
+export interface LeadsByDay {
+  date: string;
+  count: number;
+}
